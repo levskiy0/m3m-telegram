@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
 	github.com/go-telegram/bot v1.11.1
-	github.com/levskiy0/m3m v0.1.18
+	github.com/levskiy0/m3m v0.1.29
 	github.com/spf13/cast v1.7.0
 )
 
@@ -16,5 +16,4 @@ require (
 	golang.org/x/text v0.31.0 // indirect
 )
 
-// For local development (remove before release)
 replace github.com/levskiy0/m3m => ../..
