@@ -169,10 +169,18 @@ func (uctx *UpdateContext) createEditMessage() func(string, map[string]interface
 			ParseMode: models.ParseModeHTML,
 		}
 
-		// Handle inline keyboard in options
-		if kb := options["inlineKeyboard"]; kb != nil {
-			if keyboard := convertToKeyboardRows(kb); keyboard != nil {
-				params.ReplyMarkup = buildInlineKeyboard(keyboard)
+		// Handle options
+		if options != nil {
+			if kb := options["inlineKeyboard"]; kb != nil {
+				if keyboard := convertToKeyboardRows(kb); keyboard != nil {
+					params.ReplyMarkup = buildInlineKeyboard(keyboard)
+				}
+			}
+			if disablePreview, ok := options["disableWebPagePreview"].(bool); ok && disablePreview {
+				disabled := true
+				params.LinkPreviewOptions = &models.LinkPreviewOptions{
+					IsDisabled: &disabled,
+				}
 			}
 		}
 
