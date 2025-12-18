@@ -61,6 +61,28 @@ func (uctx *UpdateContext) convertMessage(m *models.Message) map[string]interfac
 			"fileSize":     m.Document.FileSize,
 		}
 	}
+	if m.Sticker != nil {
+		sticker := map[string]interface{}{
+			"fileId":       m.Sticker.FileID,
+			"fileUniqueId": m.Sticker.FileUniqueID,
+			"width":        m.Sticker.Width,
+			"height":       m.Sticker.Height,
+			"isAnimated":   m.Sticker.IsAnimated,
+			"isVideo":      m.Sticker.IsVideo,
+			"type":         m.Sticker.Type,
+			"emoji":        m.Sticker.Emoji,
+			"setName":      m.Sticker.SetName,
+		}
+		if m.Sticker.Thumbnail != nil {
+			sticker["thumbnail"] = map[string]interface{}{
+				"fileId":       m.Sticker.Thumbnail.FileID,
+				"fileUniqueId": m.Sticker.Thumbnail.FileUniqueID,
+				"width":        m.Sticker.Thumbnail.Width,
+				"height":       m.Sticker.Thumbnail.Height,
+			}
+		}
+		msg["sticker"] = sticker
+	}
 	// Forward origin (new API)
 	if m.ForwardOrigin != nil {
 		origin := map[string]interface{}{

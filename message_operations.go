@@ -615,6 +615,23 @@ func (instance *BotInstance) createGetMe() func() (map[string]interface{}, error
 	}
 }
 
+func (instance *BotInstance) createGetFile() func(string) (map[string]interface{}, error) {
+	return func(fileID string) (map[string]interface{}, error) {
+		file, err := instance.bot.GetFile(instance.ctx, &bot.GetFileParams{
+			FileID: fileID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return map[string]interface{}{
+			"fileId":       file.FileID,
+			"fileUniqueId": file.FileUniqueID,
+			"fileSize":     file.FileSize,
+			"filePath":     file.FilePath,
+		}, nil
+	}
+}
+
 func (instance *BotInstance) createGetChatMember() func(int64, int64) (map[string]interface{}, error) {
 	return func(chatID int64, userID int64) (map[string]interface{}, error) {
 		member, err := instance.bot.GetChatMember(instance.ctx, &bot.GetChatMemberParams{

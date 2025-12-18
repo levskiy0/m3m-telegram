@@ -150,6 +150,7 @@ func (p *TelegramPlugin) createInstanceObject(runtime *goja.Runtime, instance *B
 
 		// Utilities
 		"getChatMember": instance.createGetChatMember(),
+		"getFile":       instance.createGetFile(),
 	}
 }
 
