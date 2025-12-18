@@ -64,6 +64,19 @@ interface TelegramDocument {
     fileSize?: number;
 }
 
+interface TelegramSticker {
+    fileId: string;
+    fileUniqueId: string;
+    width: number;
+    height: number;
+    isAnimated: boolean;
+    isVideo: boolean;
+    type: string;
+    emoji?: string;
+    setName?: string;
+    thumbnail?: TelegramPhotoSize;
+}
+
 interface TelegramForwardOrigin {
     type: "user" | "hidden_user" | "chat" | "channel";
     date: number;

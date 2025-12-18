@@ -132,7 +132,7 @@ func (p *TelegramPlugin) createInstanceObject(runtime *goja.Runtime, instance *B
 		"sendMessage":  instance.createSendMessage(),
 		"sendPhoto":    p.createSendPhoto(instance),
 		"sendDocument": p.createSendDocument(instance),
-		"sendSticker":  instance.createSendSticker(),
+		"sendSticker":  p.createSendSticker(instance),
 		"sendVideo":    p.createSendVideo(instance),
 		"sendAudio":    p.createSendAudio(instance),
 		"sendVoice":    p.createSendVoice(instance),

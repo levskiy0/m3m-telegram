@@ -89,6 +89,7 @@ func (instance *BotInstance) createContextObject(uctx *UpdateContext) map[string
 		"update":                  uctx.convertUpdate(),
 		"reply":                   uctx.createReply(),
 		"replyPhoto":              uctx.createReplyPhoto(),
+		"replySticker":            uctx.createReplySticker(),
 		"replyWithKeyboard":       uctx.createReplyWithKeyboard(),
 		"replyWithInlineKeyboard": uctx.createReplyWithInlineKeyboard(),
 		"answerCallback":          uctx.createAnswerCallback(),

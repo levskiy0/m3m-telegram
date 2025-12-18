@@ -218,6 +218,52 @@ func (uctx *UpdateContext) createDeleteMessage() func() error {
 	}
 }
 
+func (uctx *UpdateContext) createReplySticker() func(string) (map[string]interface{}, error) {
+	return func(sticker string) (map[string]interface{}, error) {
+		chatID := uctx.getChatID()
+		if chatID == 0 {
+			return nil, fmt.Errorf("no chat ID available")
+		}
+
+		params := &bot.SendStickerParams{
+			ChatID: chatID,
+		}
+
+		// Resolve path relative to storage
+		sticker = plugin.MustResolvePath(uctx.instance.storagePath, sticker)
+
+		// Check if it's a file path, base64, URL or file_id
+		if plugin.IsFilePath(sticker) {
+			data, err := os.ReadFile(sticker)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read file: %w", err)
+			}
+			params.Sticker = &models.InputFileUpload{
+				Filename: filepath.Base(sticker),
+				Data:     bytes.NewReader(data),
+			}
+		} else if plugin.IsBase64(sticker) {
+			data, err := base64.StdEncoding.DecodeString(sticker)
+			if err != nil {
+				return nil, fmt.Errorf("invalid base64: %w", err)
+			}
+			params.Sticker = &models.InputFileUpload{
+				Filename: "sticker.webp",
+				Data:     bytes.NewReader(data),
+			}
+		} else {
+			// file_id or URL - send as is
+			params.Sticker = &models.InputFileString{Data: sticker}
+		}
+
+		msg, err := uctx.instance.bot.SendSticker(uctx.instance.ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		return uctx.convertMessage(msg), nil
+	}
+}
+
 // Instance direct send methods
 
 func (instance *BotInstance) createSendMessage() func(int64, string, map[string]interface{}) (map[string]interface{}, error) {
@@ -370,11 +416,10 @@ func (p *TelegramPlugin) createSendDocument(instance *BotInstance) func(int64, s
 	}
 }
 
-func (instance *BotInstance) createSendSticker() func(int64, string, map[string]interface{}) (map[string]interface{}, error) {
+func (p *TelegramPlugin) createSendSticker(instance *BotInstance) func(int64, string, map[string]interface{}) (map[string]interface{}, error) {
 	return func(chatID int64, sticker string, options map[string]interface{}) (map[string]interface{}, error) {
 		params := &bot.SendStickerParams{
-			ChatID:  chatID,
-			Sticker: &models.InputFileString{Data: sticker},
+			ChatID: chatID,
 		}
 
 		if options != nil {
@@ -383,6 +428,33 @@ func (instance *BotInstance) createSendSticker() func(int64, string, map[string]
 					params.ReplyMarkup = buildInlineKeyboard(keyboard)
 				}
 			}
+		}
+
+		// Resolve path relative to storage
+		sticker = plugin.MustResolvePath(p.storagePath, sticker)
+
+		// Check if it's a file path, base64, URL or file_id
+		if plugin.IsFilePath(sticker) {
+			data, err := os.ReadFile(sticker)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read file: %w", err)
+			}
+			params.Sticker = &models.InputFileUpload{
+				Filename: filepath.Base(sticker),
+				Data:     bytes.NewReader(data),
+			}
+		} else if plugin.IsBase64(sticker) {
+			data, err := base64.StdEncoding.DecodeString(sticker)
+			if err != nil {
+				return nil, fmt.Errorf("invalid base64: %w", err)
+			}
+			params.Sticker = &models.InputFileUpload{
+				Filename: "sticker.webp",
+				Data:     bytes.NewReader(data),
+			}
+		} else {
+			// file_id or URL - send as is
+			params.Sticker = &models.InputFileString{Data: sticker}
 		}
 
 		msg, err := instance.bot.SendSticker(instance.ctx, params)
