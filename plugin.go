@@ -37,13 +37,12 @@ func (p *TelegramPlugin) URL() string {
 func (p *TelegramPlugin) Init(config map[string]interface{}) error {
 	p.bots = make(map[string]*BotInstance)
 	p.initialized = true
-	fmt.Printf("[telegram] Init config: %+v\n", config)
+	p.skipTLSVerify = true // Default to true
 	if path, ok := config["storage_path"].(string); ok {
 		p.storagePath = path
 	}
 	if skipTLS, ok := config["skipTLSVerify"].(bool); ok {
 		p.skipTLSVerify = skipTLS
-		fmt.Printf("[telegram] skipTLSVerify set to: %v\n", skipTLS)
 	}
 	return nil
 }
