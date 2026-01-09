@@ -34,6 +34,7 @@ func (uctx *UpdateContext) convertMessage(m *models.Message) map[string]interfac
 		"messageId": m.ID,
 		"date":      m.Date,
 		"text":      m.Text,
+		"caption":   m.Caption,
 		"chat":      uctx.convertChat(m.Chat),
 	}
 	if m.From != nil {
