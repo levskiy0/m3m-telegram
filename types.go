@@ -11,10 +11,11 @@ import (
 
 // TelegramPlugin provides Telegram bot functionality to M3M runtime
 type TelegramPlugin struct {
-	initialized bool
-	bots        map[string]*BotInstance
-	mu          sync.RWMutex
-	storagePath string
+	initialized   bool
+	bots          map[string]*BotInstance
+	mu            sync.RWMutex
+	storagePath   string
+	skipTLSVerify bool
 }
 
 // BotInstance represents a running Telegram bot

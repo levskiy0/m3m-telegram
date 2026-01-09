@@ -4,7 +4,10 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/dop251/goja"
 	"github.com/go-telegram/bot"
@@ -36,6 +39,9 @@ func (p *TelegramPlugin) Init(config map[string]interface{}) error {
 	p.initialized = true
 	if path, ok := config["storage_path"].(string); ok {
 		p.storagePath = path
+	}
+	if skipTLS, ok := config["skipTLSVerify"].(bool); ok {
+		p.skipTLSVerify = skipTLS
 	}
 	return nil
 }
@@ -88,6 +94,18 @@ func (p *TelegramPlugin) startBot(runtime *goja.Runtime, token string, callback 
 		bot.WithDefaultHandler(func(ctx context.Context, b *bot.Bot, update *models.Update) {
 			instance.handleUpdate(ctx, b, update)
 		}),
+	}
+
+	// Add custom HTTP client if TLS verification should be skipped
+	if p.skipTLSVerify {
+		transport := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		httpClient := &http.Client{
+			Transport: transport,
+			Timeout:   30 * time.Second,
+		}
+		opts = append(opts, bot.WithHTTPClient(60*time.Second, httpClient))
 	}
 
 	b, err := bot.New(token, opts...)
